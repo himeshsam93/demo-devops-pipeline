@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_TAG = "local-${env.BUILD_NUMBER}"
-       
+        
         SONAR_HOST_URL = "http://host.docker.internal:9000" // adjust for Linux
         SONAR_TOKEN = credentials('sonar-token') // Jenkins credential
     }
@@ -12,7 +12,6 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                // Explicit Git checkout to avoid SCM issues
                 git(
                     branch: 'main',
                     url: 'https://github.com/himeshsam93/demo-devops-pipeline.git'
@@ -22,7 +21,7 @@ pipeline {
 
         stage('Install & Unit Tests') {
             agent {
-                docker { image 'node:20' } // Node preinstalled
+                docker { image 'node:20' }
             }
             steps {
                 dir('app') {
@@ -40,12 +39,14 @@ pipeline {
         }
 
         stage('Build Docker Image') {
+            agent { label 'docker' } // run on a node with Docker available
             steps {
                 sh "docker build -t ${DOCKERHUB_REPO}:${IMAGE_TAG} ./app"
             }
         }
 
         stage('Code Quality - SonarQube') {
+            agent { label 'docker' } // host Docker access
             steps {
                 sh """
                     docker run --rm -v "${env.WORKSPACE}/app":/usr/src -e SONAR_HOST_URL=${SONAR_HOST_URL} \\
@@ -59,6 +60,7 @@ pipeline {
         }
 
         stage('Security Scan') {
+            agent { label 'docker' } // host Docker access
             steps {
                 sh """
                     docker run --rm -v "${env.WORKSPACE}/app":/project aquasec/trivy:latest fs --severity CRITICAL,HIGH --ignore-unfixed /project || true
@@ -72,6 +74,7 @@ pipeline {
         }
 
         stage('Deploy to Staging') {
+            agent { label 'docker' }
             steps {
                 sh 'docker-compose -f docker-compose.yml up -d --build'
                 sh 'sleep 5'
@@ -80,12 +83,14 @@ pipeline {
         }
 
         stage('Integration Check (Staging)') {
+            agent { label 'docker' }
             steps {
                 sh 'curl -f http://localhost:3000/ || (echo "App not responding" && exit 1)'
             }
         }
 
         stage('Monitoring & Alerts') {
+            agent { label 'docker' }
             steps {
                 sh 'docker-compose -f docker-compose.yml up -d prometheus grafana || true'
                 sh 'curl -f http://localhost:9090/-/ready || echo "Prometheus not ready (ok for demo)"'
@@ -94,3 +99,4 @@ pipeline {
         }
     }
 }
+
