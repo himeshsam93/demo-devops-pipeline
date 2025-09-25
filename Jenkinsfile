@@ -16,6 +16,9 @@ pipeline {
 
 
     stage('Install & Unit Tests') {
+      agent {
+        docker { image 'node:20' }  // Jenkins will pull Node.js 20
+    }
         
       steps {
         dir('app') {
