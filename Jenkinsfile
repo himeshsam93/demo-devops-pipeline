@@ -1,5 +1,10 @@
 pipeline {
-  agent any
+  agent {
+    docker {
+      image 'docker:24.0.6-dind'
+      args '--privileged'
+    }
+  }
   environment {
     
     IMAGE_TAG = "local-${env.BUILD_NUMBER}"
