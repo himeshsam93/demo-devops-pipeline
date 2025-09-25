@@ -8,12 +8,8 @@ pipeline {
   }
 
   stages {
-    stage('Checkout') {
-            steps {
-                git url: 'https://github.com/himeshsam93/demo-devops-pipeline.git',
-                    credentialsId: "${GIT_CREDS}",
-                    branch: 'main'
-            }
+     stage('Checkout') {
+      steps { checkout scm }
     }
 
     stage('Install & Unit Tests') {
