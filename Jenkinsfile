@@ -9,7 +9,10 @@ pipeline {
 
   stages {
     stage('Checkout') {
-      steps { checkout scm }
+       git(
+            branch: 'main',
+            url: 'https://github.com/himeshsam93/demo-devops-pipeline.git'
+        )
     }
 
     stage('Install & Unit Tests') {
