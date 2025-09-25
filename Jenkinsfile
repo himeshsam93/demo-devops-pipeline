@@ -1,7 +1,7 @@
 pipeline {
   agent any
   environment {
-    docker { image 'node:20' } 
+  
     IMAGE_TAG = "local-${env.BUILD_NUMBER}"
     SONAR_HOST_URL = "http://host.docker.internal:9000" // adjust for Linux if needed
     SONAR_TOKEN = credentials('sonar-token') // must create in Jenkins
@@ -9,10 +9,17 @@ pipeline {
 
   stages {
     stage('Checkout') {
-      steps { checkout scm }
+            steps {
+                git url: 'https://github.com/himeshsam93/demo-devops-pipeline.git',
+                    credentialsId: "${GIT_CREDS}",
+                    branch: 'main'
+            }
     }
 
     stage('Install & Unit Tests') {
+      agent {
+                docker { image 'node:20' }  // Node.js preinstalled
+            }
       steps {
         dir('app') {
           sh 'npm ci'
