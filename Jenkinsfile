@@ -1,6 +1,7 @@
 pipeline {
   agent any
   environment {
+    docker { image 'node:20' } 
     IMAGE_TAG = "local-${env.BUILD_NUMBER}"
     SONAR_HOST_URL = "http://host.docker.internal:9000" // adjust for Linux if needed
     SONAR_TOKEN = credentials('sonar-token') // must create in Jenkins
