@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  app:
+    build:
+      context: ./app
+    image: demo-devops-app:staging
+    container_name: demo-app-staging
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=staging
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  grafana:
+    image: grafana/grafana:9.0.0
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
