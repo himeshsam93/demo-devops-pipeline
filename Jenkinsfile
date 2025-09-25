@@ -1,5 +1,9 @@
 pipeline {
   agent any
+ 
+  tools {
+    nodejs "NodeJS 20"
+  }
   environment {
     
     IMAGE_TAG = "local-${env.BUILD_NUMBER}"
@@ -16,10 +20,7 @@ pipeline {
 
 
     stage('Install & Unit Tests') {
-      agent {
-        docker { image 'node:20' }  // Jenkins will pull Node.js 20
-    }
-        
+      
       steps {
         dir('app') {
           sh 'npm ci'
