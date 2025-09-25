@@ -1,21 +1,18 @@
 pipeline {
   agent any
   environment {
-  
+    
     IMAGE_TAG = "local-${env.BUILD_NUMBER}"
     SONAR_HOST_URL = "http://host.docker.internal:9000" // adjust for Linux if needed
     SONAR_TOKEN = credentials('sonar-token') // must create in Jenkins
   }
 
   stages {
-     stage('Checkout') {
+    stage('Checkout') {
       steps { checkout scm }
     }
 
     stage('Install & Unit Tests') {
-      agent {
-                docker { image 'node:20' }  // Node.js preinstalled
-            }
       steps {
         dir('app') {
           sh 'npm ci'
