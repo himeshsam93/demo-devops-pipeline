@@ -9,11 +9,11 @@ pipeline {
 
   stages {
     stage('Checkout') {
-        git(
-            branch: 'main',
-            url: 'https://github.com/himeshsam93/demo-devops-pipeline.git'
-        )
+      steps {
+          git branch: 'main', url: 'https://github.com/himeshsam93/demo-devops-pipeline.git'
+      }
     }
+
 
     stage('Install & Unit Tests') {
         agent {
