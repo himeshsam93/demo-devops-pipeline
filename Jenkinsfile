@@ -16,9 +16,7 @@ pipeline {
 
 
     stage('Install & Unit Tests') {
-        agent {
-            docker { image 'node:20' }
-        }
+        
       steps {
         dir('app') {
           sh 'npm ci'
